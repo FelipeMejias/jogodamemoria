@@ -16,9 +16,26 @@ import peugeot from './imgs/peugeot.jpg'
 import renault from './imgs/renault.jpg'
 import toyota from './imgs/toyota.jpg'
 import volkswagen from './imgs/volwswagen.jpg'
+import ferrari from './imgs/ferrari.jpg'
+import fiat from './imgs/fiat.jpg'
+import ford from './imgs/ford.png'
+import kia from './imgs/kia.png'
+import lamborghini from './imgs/lamborghini.jpg'
+import landrover from './imgs/landrover.jpg'
+import maserati from './imgs/maserati.png'
+import mitsubishi from './imgs/mitsubishi.png'
+import porsche from './imgs/porsche.jpg'
+import ram from './imgs/ram.png'
+import suzuki from './imgs/suzuki.png'
+import volvo from './imgs/volvo.jpg'
 const lista24falses=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,]
 function App() {
-  const imagens=[audi,bmw,chevrolet,citroen,honda,hyundai,mercedes,nissan,peugeot,renault,toyota,volkswagen]
+  const marcas=[audi,bmw,chevrolet,citroen,
+    renault,toyota,volkswagen,ferrari,
+    honda,hyundai,fiat,ford,kia,lamborghini,landrover,mercedes,nissan,peugeot,
+    maserati,mitsubishi,
+    porsche,ram,suzuki,volvo]
+    const [imagens,setImagens]=useState(false)
   const array=[0,1,2,3,4,5,6,7,8,9,10,11,0,1,2,3,4,5,6,7,8,9,10,11]
   const [emb,setEmb]=useState(false)
   function shuffle(o) {
@@ -32,7 +49,10 @@ function App() {
   const [vez,setVez]=useState(0)
   const [show,setShow]=useState(lista24falses)
   const [achados,setAchados]=useState(lista24falses)
-  useEffect(()=>{setEmb(shuffle(array))},[])
+  useEffect(()=>{
+    setImagens(shuffle(marcas))
+    setEmb(shuffle(array))
+  },[])
   useEffect(()=>{
     const quemJogou=vez
     if(jogo.length==0)setShow(lista24falses)
@@ -65,44 +85,57 @@ function App() {
           setJogo([])
           setAchados(ar)
           setVez(quemJogou)
+          let acabou=true
+          for(let item of ar){
+            if(!item)acabou=false
+          }
+          if(acabou){
+            setTipo(tipo==1?`
+            Boaaa! 
+            Você completou errando apenas ${erros}
+            `:`
+            ${pontos0>pontos1?'Vermelho':pontos1>pontos0?'Azul':'Empatou!'} ${pontos0==pontos1?'':'ganhou!'} 
+            Placar: ${pontos0>pontos1?pontos0:pontos1} a ${pontos0<pontos1?pontos0:pontos1}
+            `)
+          }
         }else{
           setErros(erros+1)
           setJogo([])
           setVez(quemJogou==0?1:0)
         }
-      },2000)
+      },1700)
     }
   },[jogo])
-  const emb1=[emb[0],emb[1],emb[2],emb[3],emb[4],emb[5],emb[6],emb[7],emb[8],emb[9],emb[10],emb[11],]
-  const emb2=[emb[12],emb[13],emb[14],emb[15],emb[16],emb[17],emb[18],emb[19],emb[20],emb[21],emb[22],emb[23],]
+  console.log(achados)
   return (
+    tipo==false?
+    <Tudo>
+          <Btn cor={true} onClick={()=>setTipo(1)}>
+            solo
+          </Btn>
+          <Btn  onClick={()=>setTipo(2)}>
+            confronto
+          </Btn>
+    </Tudo>:
+    tipo!=1&&tipo!=2?
+    <Tudo>
+      <h6>{tipo}</h6>
+    </Tudo>:
     <Tudo>
       {
-        tipo==false?<Placar>
-          <button onClick={()=>setTipo(1)}>
-            solo
-          </button>
-          <button onClick={()=>setTipo(2)}>
-            confronto
-          </button>
-        </Placar>:
         tipo==1?<Placar>
-          <h1>{erros}</h1>
-          {vez===null?<></>:<h2>go!</h2>}
+          <h1>erros: {erros}</h1>
+          {vez===null?<Go cor={'transparent'}></Go>:<Go cor={'green'}>go!</Go>}
         </Placar>:<Placar>
         <h1>{placar[0]}</h1>
+        
+        {vez===null?<Go cor={'transparent'}></Go>:vez==0?<Go cor={'#f20707'}>go!</Go>:<Go cor={'#2320d6'}>go!</Go>}
         <h2>{placar[1]}</h2>
-        {vez===null?<></>:vez==0?<h1>go!</h1>:<h2>go!</h2>}
         </Placar>
       }
       {!emb||!tipo?<></>:<Deck>
-        {emb1.map((num,index)=>(achados[index]?<Kard></Kard>:<Card onClick={()=>setJogo([...jogo,index])}>
+        {emb.map((num,index)=>(achados[index]?<Kard></Kard>:<Card onClick={()=>{if(jogo.length==1&&jogo[0]==index){}else{setJogo([...jogo,index])}}}>
             {!show[index]?<section><img src={fusca}/></section>:
-            <article><img src={imagens[num]}/></article>}
-          </Card>))}
-          <Kard/>
-          {emb2.map((num,index)=>(achados[index+12]?<Kard></Kard>:<Card onClick={()=>setJogo([...jogo,index+12])}>
-            {!show[index+12]?<section><img src={fusca}/></section>:
             <article><img src={imagens[num]}/></article>}
           </Card>))}
         </Deck>}
@@ -111,24 +144,27 @@ function App() {
 }
 
 export default App;
+const Go=styled.div`
+display:flex;justify-content:center;align-items:center;
+color:white;box-sizing:border-box;
+background-color:${props=>props.cor};
+width:90px;height:50px;border-radius:25px;
+margin:15px 15px 0 20px;padding-bottom:8px;
+font-weight:600;font-size:35px;
+`
 const Placar=styled.div`
-button{cursor:pointer;
-  width:90px;height:40px;
-  margin:20px 20px 0 20px;
-  border:0;border-radius:10px;
-  background-color:orange;
-}
-height:80px;display:flex;
+width:100%;
+height:80px;display:flex;justify-content:space-evenly;
 font-size:20px;
-h1{color:red;font-weight:600;font-size:35px;margin:15px 15px 0 20px;}
-h2{color:blue;font-weight:600;font-size:35px;margin:15px 15px 0 20px;}
+h1{width:20px;color:#f20707;font-weight:600;font-size:35px;margin:15px 15px 0 20px;}
+h2{width:20px;color:#2320d6;font-weight:600;font-size:35px;margin:15px 15px 0 20px;}
 `
 const Kard=styled.div`
-height:17%;width:18%;
+height:23vw;width:23%;
 `
 const Card=styled.div`cursor:pointer;
 
-height:18%;width:18%;background-color:white;border-radius:10px;
+height:23vw;width:23%;background-color:white;border-radius:10px;
 section{img{width:100%;border-radius:10px;}};
 article{width:100%;height:100%;
   display:flex;justify-content:center;align-items:center;
@@ -136,11 +172,20 @@ article{width:100%;height:100%;
 }
 `
 const Deck=styled.div`
-width:100%;height:100vw;display:flex;flex-wrap:wrap;
+width:100%;height:150vw;display:flex;flex-wrap:wrap;
 justify-content:space-evenly;align-items:space-evenly;
 
 `
 const Tudo=styled.div`
 width:100vw;height:100vh;
-background-color:#e8e6b0
+background-color:#e8e6b0;
+display:flex;flex-direction:column;align-items:center;
+h6{color:brown;font-size:30px;width:250px;height:100%;display:flex;justify-content:center;align-items:center;}
+`
+const Btn=styled.button`
+cursor:pointer;font-size:20px;
+  width:90%;height:70px;
+  margin:${props=>props.cor?'100px 0px 30px 0':''};
+  border:0;border-radius:35px;
+  background-color:orange;
 `
