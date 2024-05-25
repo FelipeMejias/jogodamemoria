@@ -100,12 +100,12 @@ height:15%;width:22%;
 `
 const Card=styled.div`cursor:pointer;
 display:flex;justify-content:center;align-items:center;
-height:15%;width:22%;background-color:white;border-radius:10px;
+height:12%;width:18%;background-color:white;border-radius:10px;
 section{img{width:100%;border-radius:10px;}};
 article{img{width:100%}}
 `
 const Deck=styled.div`
-width:100%;height:200vw;display:flex;flex-wrap:wrap;
+width:100%;height:140vw;display:flex;flex-wrap:wrap;
 justify-content:space-evenly;align-items:space-evenly;
 
 `
