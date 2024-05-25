@@ -25,6 +25,8 @@ function App() {
     for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
   }
+  const [erros,setErros]=useState(0)
+  const [tipo,setTipo]=useState(false)
   const [jogo,setJogo]=useState([])
   const [placar,setPlacar]=useState([0,0])
   const [vez,setVez]=useState(0)
@@ -64,20 +66,33 @@ function App() {
           setAchados(ar)
           setVez(quemJogou)
         }else{
+          setErros(erros+1)
           setJogo([])
           setVez(quemJogou==0?1:0)
         }
       },2000)
     }
   },[jogo])
-  console.log(jogo)
   return (
     <Tudo>
-      <Placar>
+      {
+        tipo==false?<Placar>
+          <button onClick={()=>setTipo(1)}>
+            solo
+          </button>
+          <button onClick={()=>setTipo(2)}>
+            confronto
+          </button>
+        </Placar>:
+        tipo==1?<Placar>
+          <h1>{erros}</h1>
+          {vez===null?<></>:<h2>go!</h2>}
+        </Placar>:<Placar>
         <h1>{placar[0]}</h1>
         <h2>{placar[1]}</h2>
         {vez===null?<></>:vez==0?<h1>go!</h1>:<h2>go!</h2>}
-      </Placar>
+        </Placar>
+      }
       {!emb?<></>:<Deck>
         {emb.map((num,index)=>(achados[index]?<Kard></Kard>:<Card onClick={()=>setJogo([...jogo,index])}>
             {!show[index]?<section><img src={fusca}/></section>:
@@ -90,6 +105,12 @@ function App() {
 
 export default App;
 const Placar=styled.div`
+button{cursor:pointer;
+  width:90px;height:40px;
+  margin:20px 20px 0 20px;
+  border:0;border-radius:10px;
+  background-color:orange;
+}
 height:80px;display:flex;
 font-size:20px;
 h1{color:red;font-weight:600;font-size:35px;margin:15px 15px 0 20px;}
@@ -100,7 +121,7 @@ height:15%;width:22%;
 `
 const Card=styled.div`cursor:pointer;
 display:flex;justify-content:center;align-items:center;
-height:12%;width:18%;background-color:white;border-radius:10px;
+height:18%;width:18%;background-color:white;border-radius:10px;
 section{img{width:100%;border-radius:10px;}};
 article{img{width:100%}}
 `
