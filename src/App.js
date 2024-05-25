@@ -93,7 +93,7 @@ function App() {
         {vez===null?<></>:vez==0?<h1>go!</h1>:<h2>go!</h2>}
         </Placar>
       }
-      {!emb?<></>:<Deck>
+      {!emb||!tipo?<></>:<Deck>
         {emb.map((num,index)=>(achados[index]?<Kard></Kard>:<Card onClick={()=>setJogo([...jogo,index])}>
             {!show[index]?<section><img src={fusca}/></section>:
             <article><img src={imagens[num]}/></article>}
