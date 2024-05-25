@@ -124,16 +124,19 @@ h1{color:red;font-weight:600;font-size:35px;margin:15px 15px 0 20px;}
 h2{color:blue;font-weight:600;font-size:35px;margin:15px 15px 0 20px;}
 `
 const Kard=styled.div`
-height:15%;width:22%;
+height:17%;width:18%;
 `
 const Card=styled.div`cursor:pointer;
-display:flex;justify-content:center;align-items:center;
+
 height:18%;width:18%;background-color:white;border-radius:10px;
 section{img{width:100%;border-radius:10px;}};
-article{img{width:100%}}
+article{width:100%;height:100%;
+  display:flex;justify-content:center;align-items:center;
+  img{width:85%;}
+}
 `
 const Deck=styled.div`
-width:100%;height:140vw;display:flex;flex-wrap:wrap;
+width:100%;height:100vw;display:flex;flex-wrap:wrap;
 justify-content:space-evenly;align-items:space-evenly;
 
 `
