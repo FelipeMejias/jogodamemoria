@@ -124,7 +124,7 @@ function App() {
     <Tudo>
       {
         tipo==1?<Placar>
-          <h1>erros: {erros}</h1>
+          <h3>erros: {erros}</h3>
           {vez===null?<Go cor={'transparent'}></Go>:<Go cor={'green'}>go!</Go>}
         </Placar>:<Placar>
         <h1>{placar[0]}</h1>
@@ -158,13 +158,14 @@ height:80px;display:flex;justify-content:space-evenly;
 font-size:20px;
 h1{width:20px;color:#f20707;font-weight:600;font-size:35px;margin:15px 15px 0 20px;}
 h2{width:20px;color:#2320d6;font-weight:600;font-size:35px;margin:15px 15px 0 20px;}
+h3{width:;color:black;font-weight:600;font-size:35px;margin:15px 15px 0 20px;}
 `
 const Kard=styled.div`
-height:23vw;width:23%;
+height:22.6vw;width:23%;
 `
 const Card=styled.div`cursor:pointer;
 
-height:23vw;width:23%;background-color:white;border-radius:10px;
+height:22.6vw;width:23%;background-color:white;border-radius:10px;
 section{img{width:100%;border-radius:10px;}};
 article{width:100%;height:100%;
   display:flex;justify-content:center;align-items:center;
@@ -172,7 +173,7 @@ article{width:100%;height:100%;
 }
 `
 const Deck=styled.div`
-width:100%;height:150vw;display:flex;flex-wrap:wrap;
+width:98.5%;height:147vw;display:flex;flex-wrap:wrap;
 justify-content:space-evenly;align-items:space-evenly;
 
 `
