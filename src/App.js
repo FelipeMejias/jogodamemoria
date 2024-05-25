@@ -73,6 +73,8 @@ function App() {
       },2000)
     }
   },[jogo])
+  const emb1=[emb[0],emb[1],emb[2],emb[3],emb[4],emb[5],emb[6],emb[7],emb[8],emb[9],emb[10],emb[11],]
+  const emb2=[emb[12],emb[13],emb[14],emb[15],emb[16],emb[17],emb[18],emb[19],emb[20],emb[21],emb[22],emb[23],]
   return (
     <Tudo>
       {
@@ -94,8 +96,13 @@ function App() {
         </Placar>
       }
       {!emb||!tipo?<></>:<Deck>
-        {emb.map((num,index)=>(achados[index]?<Kard></Kard>:<Card onClick={()=>setJogo([...jogo,index])}>
+        {emb1.map((num,index)=>(achados[index]?<Kard></Kard>:<Card onClick={()=>setJogo([...jogo,index])}>
             {!show[index]?<section><img src={fusca}/></section>:
+            <article><img src={imagens[num]}/></article>}
+          </Card>))}
+          <Kard/>
+          {emb2.map((num,index)=>(achados[index+12]?<Kard></Kard>:<Card onClick={()=>setJogo([...jogo,index+12])}>
+            {!show[index+12]?<section><img src={fusca}/></section>:
             <article><img src={imagens[num]}/></article>}
           </Card>))}
         </Deck>}
