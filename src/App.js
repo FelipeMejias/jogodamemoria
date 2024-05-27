@@ -175,8 +175,8 @@ article{width:100%;height:100%;
 const Deck=styled.div`
 width:98.5%;height:147.7vw;display:flex;flex-wrap:wrap;
 justify-content:space-evenly;align-items:space-evenly;
-@media(min-width:700px){
-  width:700px;height:1050px;
+@media(min-width:650px){
+  width:90%;height:135vw;
 } 
 `
 const Tudo=styled.div`
