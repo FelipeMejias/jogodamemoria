@@ -161,11 +161,11 @@ h2{width:20px;color:#2320d6;font-weight:600;font-size:35px;margin:15px 15px 0 20
 h3{width:;color:black;font-weight:600;font-size:35px;margin:15px 15px 0 20px;}
 `
 const Kard=styled.div`
-height:22.6vw;width:23%;
+height:15.3%;width:23%;
 `
 const Card=styled.div`cursor:pointer;
 
-height:22.6vw;width:23%;background-color:white;border-radius:10px;
+height:15.3%;width:23%;background-color:white;border-radius:10px;
 section{img{width:100%;border-radius:10px;}};
 article{width:100%;height:100%;
   display:flex;justify-content:center;align-items:center;
@@ -173,9 +173,11 @@ article{width:100%;height:100%;
 }
 `
 const Deck=styled.div`
-width:98.5%;height:147vw;display:flex;flex-wrap:wrap;
+width:98.5%;height:147.7vw;display:flex;flex-wrap:wrap;
 justify-content:space-evenly;align-items:space-evenly;
-
+@media(min-width:700px){
+  width:700px;height:1050px;
+} 
 `
 const Tudo=styled.div`
 width:100vw;height:100vh;
