@@ -176,7 +176,7 @@ const Deck=styled.div`
 width:98.5%;height:147.7vw;display:flex;flex-wrap:wrap;
 justify-content:space-evenly;align-items:space-evenly;
 @media(min-width:650px){
-  width:90%;height:135vw;
+  width:84%;height:126vw;
 } 
 `
 const Tudo=styled.div`
