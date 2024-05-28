@@ -36,12 +36,12 @@ function App() {
     maserati,mitsubishi,
     porsche,ram,suzuki,volvo]
     const [imagens,setImagens]=useState(false)
-  const array=[0,1,2,3,4,5,6,7,8,9,10,11,0,1,2,3,4,5,6,7,8,9,10,11]
   const [emb,setEmb]=useState(false)
   function shuffle(o) {
     for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
   }
+  const [pares,setPares]=useState(12)
   const [erros,setErros]=useState(0)
   const [tipo,setTipo]=useState(false)
   const [jogo,setJogo]=useState([])
@@ -50,22 +50,39 @@ function App() {
   const [show,setShow]=useState(lista24falses)
   const [achados,setAchados]=useState(lista24falses)
   useEffect(()=>{
-    setImagens(shuffle(marcas))
-    setEmb(shuffle(array))
   },[])
   useEffect(()=>{
+    setImagens(shuffle(marcas))
+    const array=[]
+    const arrayFalses=[]
+    for(let k=0;k<pares;k++){
+      array.push(k);array.push(k);
+      arrayFalses.push(false);arrayFalses.push(false);
+    }
+    const novoEmb=shuffle(array)
+    console.log(novoEmb)
+    setEmb([...novoEmb])
+    setShow([...arrayFalses])
+    setAchados([...arrayFalses])
+  },[pares])
+  useEffect(()=>{
+    console.log(emb,show,achados)
+    const array=[]
+    for(let k=0;k<pares;k++){
+      array.push(false);array.push(false);
+    }
     const quemJogou=vez
-    if(jogo.length==0)setShow(lista24falses)
+    if(jogo.length==0)setShow(array)
     if(jogo.length==1){
       const ar=[]
-      for(let k=0;k<24;k++){
+      for(let k=0;k<pares*2;k++){
         if(k==jogo[0]){ar.push(true)}else{ar.push(false)}
       }
       setShow(ar)
     }
     if(jogo.length==2){
       const ar=[]
-      for(let k=0;k<24;k++){
+      for(let k=0;k<pares*2;k++){
         if(k==jogo[0]||k==jogo[1]){ar.push(true)}else{ar.push(false)}
       }
       setShow(ar)
@@ -74,7 +91,7 @@ function App() {
       setTimeout(()=>{
         if(emb[jogo[0]]==emb[jogo[1]]){
           const ar=[]
-          for(let k=0;k<24;k++){
+          for(let k=0;k<pares*2;k++){
             if(k==jogo[0]||k==jogo[1]){ar.push(true)}else{ar.push(achados[k])}
           }
           let pontos0=placar[0]
@@ -92,7 +109,7 @@ function App() {
           if(acabou){
             setTipo(tipo==1?`
             Boaaa! 
-            Você completou errando apenas ${erros}
+            Você ${pares} pares errando apenas ${erros}
             `:`
             ${pontos0>pontos1?'Vermelho':pontos1>pontos0?'Azul':'Empatou!'} ${pontos0==pontos1?'':'ganhou!'} 
             Placar: ${pontos0>pontos1?pontos0:pontos1} a ${pontos0<pontos1?pontos0:pontos1}
@@ -106,7 +123,7 @@ function App() {
       },1700)
     }
   },[jogo])
-  console.log(achados)
+  const listaPossiveis=[12,20]
   return (
     tipo==false?
     <Tudo>
@@ -116,11 +133,18 @@ function App() {
           <Btn  onClick={()=>setTipo(2)}>
             confronto
           </Btn>
+          <Btn  onClick={()=>setTipo(3)}>
+            {pares} pares
+          </Btn>
     </Tudo>:
-    tipo!=1&&tipo!=2?
+    tipo!=1&&tipo!=2&&tipo!=3?
     <Tudo>
       <h6>{tipo}</h6>
-    </Tudo>:
+    </Tudo>:tipo==3?
+    <Tudo>
+    {listaPossiveis.map(num=><Btn onClick={()=>{setPares(num);setTipo(false)}}>{num}</Btn>)}
+  </Tudo>
+    :
     <Tudo>
       {
         tipo==1?<Placar>
@@ -133,11 +157,18 @@ function App() {
         <h2>{placar[1]}</h2>
         </Placar>
       }
-      {!emb||!tipo?<></>:<Deck>
-        {emb.map((num,index)=>(achados[index]?<Kard></Kard>:<Card onClick={()=>{if(jogo.length==1&&jogo[0]==index){}else{setJogo([...jogo,index])}}}>
+      {!emb||!tipo?<></>:<Deck pq={pares==12?360:343} width={'98.5%'} width2={'calc(61vh - 45px)'} height={'height:147.7vw'} height2={'calc(100vh - 80px)'}>
+        {emb.map((num,index)=>{
+          const width=pares==12?23:18.4
+          const height=pares==12?15.3:11.5
+          return(
+            achados[index]?
+            <Kard width={width} height={height} ></Kard>
+            :<Card width={width} height={height} onClick={()=>{if(jogo.length==1&&jogo[0]==index){}else{setJogo([...jogo,index])}}}>
             {!show[index]?<section><img src={fusca}/></section>:
             <article><img src={imagens[num]}/></article>}
-          </Card>))}
+          </Card>
+          )})}
         </Deck>}
     </Tudo>
   );
@@ -153,7 +184,7 @@ margin:15px 15px 0 20px;padding-bottom:8px;
 font-weight:600;font-size:35px;
 `
 const Placar=styled.div`
-width:100%;
+width:100%;background-color:;
 height:80px;display:flex;justify-content:space-evenly;
 font-size:20px;
 h1{width:20px;color:#f20707;font-weight:600;font-size:35px;margin:15px 15px 0 20px;}
@@ -161,11 +192,11 @@ h2{width:20px;color:#2320d6;font-weight:600;font-size:35px;margin:15px 15px 0 20
 h3{width:;color:black;font-weight:600;font-size:35px;margin:15px 15px 0 20px;}
 `
 const Kard=styled.div`
-height:15.3%;width:23%;
+height:${props=>props.height}%;width:${props=>props.width}%;
 `
 const Card=styled.div`cursor:pointer;
 
-height:15.3%;width:23%;background-color:white;border-radius:10px;
+height:${props=>props.height}%;width:${props=>props.width}%;background-color:white;border-radius:10px;
 section{img{width:100%;border-radius:10px;}};
 article{width:100%;height:100%;
   display:flex;justify-content:center;align-items:center;
@@ -173,10 +204,10 @@ article{width:100%;height:100%;
 }
 `
 const Deck=styled.div`
-width:98.5%;height:147.7vw;display:flex;flex-wrap:wrap;
+width:${props=>props.width};height:${props=>props.height};display:flex;flex-wrap:wrap;
 justify-content:space-evenly;align-items:space-evenly;
-@media(min-width:650px){
-  width:84%;height:126vw;
+@media(min-width:${props=>props.pq}px){
+  width:${props=>props.width2};height:${props=>props.height2};
 } 
 `
 const Tudo=styled.div`
@@ -188,7 +219,7 @@ h6{color:brown;font-size:30px;width:250px;height:100%;display:flex;justify-conte
 const Btn=styled.button`
 cursor:pointer;font-size:20px;
   width:90%;height:70px;
-  margin:${props=>props.cor?'100px 0px 30px 0':''};
+  margin:${props=>props.cor?'100px 0px 0px 0':'30px 0 0 0'};
   border:0;border-radius:35px;
   background-color:orange;
 `
