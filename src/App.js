@@ -157,10 +157,10 @@ function App() {
         <h2>{placar[1]}</h2>
         </Placar>
       }
-      {!emb||!tipo?<></>:<Deck pq={pares==12?360:343} width={'98.5%'} width2={'calc(61vh - 45px)'} height={'height:147.7vw'} height2={'calc(100vh - 80px)'}>
+      {!emb||!tipo?<></>:<Deck pq={pares==12?200:200} width={'98.5%'} width2={'calc(61vh - 45px)'} height={'height:147.7vw'} height2={pares==12?'calc(100vh - 110px)':'calc(100vh - 80px)'}>
         {emb.map((num,index)=>{
           const width=pares==12?23:18.4
-          const height=pares==12?15.3:11.5
+          const height=pares==12?14:11.5
           return(
             achados[index]?
             <Kard width={width} height={height} ></Kard>
