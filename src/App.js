@@ -41,7 +41,7 @@ function App() {
     for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
   }
-  const [pares,setPares]=useState(12)
+  const [pares,setPares]=useState(false)
   const [erros,setErros]=useState(0)
   const [tipo,setTipo]=useState(false)
   const [jogo,setJogo]=useState([])
@@ -49,6 +49,30 @@ function App() {
   const [vez,setVez]=useState(0)
   const [show,setShow]=useState(lista24falses)
   const [achados,setAchados]=useState(lista24falses)
+  function encerrarJogo(pontos0,pontos1){
+    let textoFim=tipo==1?`
+            Boaaa! 
+            Você completou ${pares} pares errando apenas ${erros}
+            `:`
+            ${pontos0>pontos1?'Vermelho':pontos1>pontos0?'Azul':'Empatou!'} ${pontos0==pontos1?'':'ganhou!'} 
+            Placar: ${pontos0>pontos1?pontos0:pontos1} a ${pontos0<pontos1?pontos0:pontos1}
+            `
+            
+            if(tipo==1){
+              const recorde=JSON.parse(localStorage.getItem(`r${pares}`))||false
+              if(recorde){
+                if(erros<recorde){
+                  localStorage.setItem(`r${pares}`, JSON.stringify(erros))
+                  textoFim+='. Um novo recorde!'
+                }
+              }else{
+                textoFim+='. Um novo recorde!'
+                localStorage.setItem(`r${pares}`, JSON.stringify(erros))
+              }
+            
+          }
+    setTipo(textoFim)
+  }
   useEffect(()=>{
   },[])
   useEffect(()=>{
@@ -106,15 +130,8 @@ function App() {
           for(let item of ar){
             if(!item)acabou=false
           }
-          if(acabou){
-            setTipo(tipo==1?`
-            Boaaa! 
-            Você ${pares} pares errando apenas ${erros}
-            `:`
-            ${pontos0>pontos1?'Vermelho':pontos1>pontos0?'Azul':'Empatou!'} ${pontos0==pontos1?'':'ganhou!'} 
-            Placar: ${pontos0>pontos1?pontos0:pontos1} a ${pontos0<pontos1?pontos0:pontos1}
-            `)
-          }
+          if(acabou)encerrarJogo(pontos0,pontos1)
+            
         }else{
           setErros(erros+1)
           setJogo([])
@@ -123,26 +140,32 @@ function App() {
       },1700)
     }
   },[jogo])
-  const listaPossiveis=[12,20]
+  const listaPossiveis=[12,20,24]
+  
+  const r12=JSON.parse(localStorage.getItem('r12'))||false
+  const r20=JSON.parse(localStorage.getItem('r20'))||false
+  const r24=JSON.parse(localStorage.getItem('r24'))||false
+  const listaR=[r12,r20,r24]
   return (
     tipo==false?
     <Tudo>
-          <Btn cor={true} onClick={()=>setTipo(1)}>
+          <Btn cor={true} primeiro={true} onClick={()=>setTipo(1)}>
             solo
           </Btn>
-          <Btn  onClick={()=>setTipo(2)}>
+          <Btn cor={true}   onClick={()=>setTipo(2)}>
             confronto
           </Btn>
-          <Btn  onClick={()=>setTipo(3)}>
-            {pares} pares
-          </Btn>
+          
     </Tudo>:
-    tipo!=1&&tipo!=2&&tipo!=3?
+    tipo!=1&&tipo!=2?
     <Tudo>
       <h6>{tipo}</h6>
-    </Tudo>:tipo==3?
+    </Tudo>:(tipo==1||tipo==2)&&!pares?
     <Tudo>
-    {listaPossiveis.map(num=><Btn onClick={()=>{setPares(num);setTipo(false)}}>{num}</Btn>)}
+    {listaPossiveis.map((num,index)=><Btn onClick={()=>{setPares(num);}}>
+    {num} pares
+    {listaR[index]?<Recorde><p>RECORDE</p> <p>{listaR[index]} erros</p></Recorde>:<></>}
+    </Btn>)}
   </Tudo>
     :
     <Tudo>
@@ -157,10 +180,10 @@ function App() {
         <h2>{placar[1]}</h2>
         </Placar>
       }
-      {!emb||!tipo?<></>:<Deck pq={pares==12?200:200} width={'98.5%'} width2={'calc(61vh - 45px)'} height={'height:147.7vw'} height2={pares==12?'calc(100vh - 110px)':'calc(100vh - 80px)'}>
+      {!emb||!tipo?<></>:<Deck  width={pares==24?'calc(66vh - 45px)':'calc(59vh - 45px)'} height={pares==12?'calc(100vh - 130px)':pares==20?'calc(100vh - 90px)':'calc(100vh - 130px)'}>
         {emb.map((num,index)=>{
-          const width=pares==12?23:18.4
-          const height=pares==12?14:11.5
+          const width=pares==12?23:pares==20?18.4:15.3
+          const height=pares==12?15:11.5
           return(
             achados[index]?
             <Kard width={width} height={height} ></Kard>
@@ -175,6 +198,12 @@ function App() {
 }
 
 export default App;
+const Recorde=styled.div`
+background-color:blue;width:96px;height:50px;
+font-size:16px;display:flex;flex-direction:column;
+justify-content:space-evenly;
+p{margin:0px;}color:white;border-radius:10px;
+`
 const Go=styled.div`
 display:flex;justify-content:center;align-items:center;
 color:white;box-sizing:border-box;
@@ -206,9 +235,7 @@ article{width:100%;height:100%;
 const Deck=styled.div`
 width:${props=>props.width};height:${props=>props.height};display:flex;flex-wrap:wrap;
 justify-content:space-evenly;align-items:space-evenly;
-@media(min-width:${props=>props.pq}px){
-  width:${props=>props.width2};height:${props=>props.height2};
-} 
+
 `
 const Tudo=styled.div`
 width:100vw;height:100vh;
@@ -216,10 +243,11 @@ background-color:#e8e6b0;
 display:flex;flex-direction:column;align-items:center;
 h6{color:brown;font-size:30px;width:250px;height:100%;display:flex;justify-content:center;align-items:center;}
 `
-const Btn=styled.button`
+const Btn=styled.button`display:flex;
+align-items:center;justify-content:space-evenly;;
 cursor:pointer;font-size:20px;
   width:90%;height:70px;
-  margin:${props=>props.cor?'100px 0px 0px 0':'30px 0 0 0'};
+  margin:${props=>props.primeiro?'100px 0px 0px 0':'30px 0 0 0'};
   border:0;border-radius:35px;
-  background-color:orange;
+  background-color:${props=>props.cor?'orange':'lightblue'};
 `
