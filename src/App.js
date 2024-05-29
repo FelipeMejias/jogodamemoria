@@ -30,7 +30,7 @@ import suzuki from './imgs/suzuki.png'
 import volvo from './imgs/volvo.jpg'
 import aguia from './animais/aguia.jpg'
 import elefante from './animais/elefante.jpg'
-import formiga from './animais/formiga.jpg'
+import formiga from './animais/formiga.png'
 import girafa from './animais/girafa.png'
 import golfinho from './animais/golfinho.jpg'
 import leao from './animais/leao.jpg'
@@ -40,7 +40,7 @@ import pinguim from './animais/pinguim.jpg'
 import rino from './animais/rino.png'
 import sapo from './animais/sapo.jpg'
 import tigre from './animais/tigre.jpg'
-import capa from './animais/capa.jpg'
+import capa from './imgs/capa.jpg'
 const lista24falses=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,]
 function App() {
   const animais=[aguia,elefante,formiga,girafa,golfinho,leao,orca,orni,pinguim,rino,sapo,tigre]
