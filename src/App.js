@@ -28,8 +28,22 @@ import porsche from './imgs/porsche.jpg'
 import ram from './imgs/ram.png'
 import suzuki from './imgs/suzuki.png'
 import volvo from './imgs/volvo.jpg'
+import aguia from './animais/aguia.jpg'
+import elefante from './animais/elefante.jpg'
+import formiga from './animais/formiga.jpg'
+import girafa from './animais/girafa.png'
+import golfinho from './animais/golfinho.jpg'
+import leao from './animais/leao.jpg'
+import orca from './animais/orca.png'
+import orni from './animais/orni.jpg'
+import pinguim from './animais/pinguim.jpg'
+import rino from './animais/rino.png'
+import sapo from './animais/sapo.jpg'
+import tigre from './animais/tigre.jpg'
+import capa from './animais/capa.jpg'
 const lista24falses=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,]
 function App() {
+  const animais=[aguia,elefante,formiga,girafa,golfinho,leao,orca,orni,pinguim,rino,sapo,tigre]
   const marcas=[audi,bmw,chevrolet,citroen,
     renault,toyota,volkswagen,ferrari,
     honda,hyundai,fiat,ford,kia,lamborghini,landrover,mercedes,nissan,peugeot,
@@ -188,8 +202,8 @@ function App() {
             achados[index]?
             <Kard width={width} height={height} ></Kard>
             :<Card width={width} height={height} onClick={()=>{if(jogo.length==1&&jogo[0]==index){}else{setJogo([...jogo,index])}}}>
-            {!show[index]?<section><img src={fusca}/></section>:
-            <article><img src={imagens[num]}/></article>}
+            {!show[index]?<section><img src={capa}/></section>:
+            <article><img src={animais[num]}/></article>}
           </Card>
           )})}
         </Deck>}
