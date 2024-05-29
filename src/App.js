@@ -40,10 +40,20 @@ import pinguim from './animais/pinguim.jpg'
 import rino from './animais/rino.png'
 import sapo from './animais/sapo.jpg'
 import tigre from './animais/tigre.jpg'
+import canguru from './animais/canguru.png'
+import cobra from './animais/cobra.jpg'
+import estrela from './animais/estrela.jpg'
+import foca from './animais/foca.jpg'
+import marin from './animais/marin.jpg'
+import pato from './animais/pato.jpg'
+import tartaruga from './animais/tartaruga.jpg'
+import dino from './animais/dino.png'
 import capa from './imgs/capa.jpg'
 const lista24falses=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,]
 function App() {
-  const animais=[aguia,elefante,formiga,girafa,golfinho,leao,orca,orni,pinguim,rino,sapo,tigre]
+  const animais=[aguia,elefante,formiga,girafa,golfinho,leao,orca,orni,pinguim,rino,sapo,tigre,canguru,cobra,estrela,foca,marin,
+        pato,tartaruga,dino
+  ]
   const marcas=[audi,bmw,chevrolet,citroen,
     renault,toyota,volkswagen,ferrari,
     honda,hyundai,fiat,ford,kia,lamborghini,landrover,mercedes,nissan,peugeot,
