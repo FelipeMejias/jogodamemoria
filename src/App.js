@@ -48,7 +48,7 @@ import marin from './animais/marin.jpg'
 import pato from './animais/pato.jpg'
 import tartaruga from './animais/tartaruga.jpg'
 import dino from './animais/dino.png'
-import capa from './imgs/capa.jpg'
+import capaAnimais from './imgs/capa.jpg'
 const lista24falses=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,]
 function App() {
   const animais=[aguia,elefante,formiga,girafa,golfinho,leao,orca,orni,pinguim,rino,sapo,tigre,canguru,cobra,estrela,foca,marin,
@@ -65,6 +65,8 @@ function App() {
     for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
   }
+  const [tema,setTema]=useState(1)
+  const capa=tema==1?fusca:capaAnimais
   const [pares,setPares]=useState(false)
   const [erros,setErros]=useState(0)
   const [tipo,setTipo]=useState(false)
@@ -100,7 +102,7 @@ function App() {
   useEffect(()=>{
   },[])
   useEffect(()=>{
-    setImagens(shuffle(marcas))
+    setImagens(shuffle(tema==1?marcas:animais))
     const array=[]
     const arrayFalses=[]
     for(let k=0;k<pares;k++){
@@ -112,7 +114,7 @@ function App() {
     setEmb([...novoEmb])
     setShow([...arrayFalses])
     setAchados([...arrayFalses])
-  },[pares])
+  },[pares,tema])
   useEffect(()=>{
     console.log(emb,show,achados)
     const array=[]
@@ -179,6 +181,15 @@ function App() {
           <Btn cor={true}   onClick={()=>setTipo(2)}>
             confronto
           </Btn>
+          <h1>Tema:</h1>
+          <Btn   onClick={()=>setTema(2)}>
+            {tema==1?<Sel><ion-icon name="checkmark-circle-outline"></ion-icon></Sel>:<></>}
+            carros
+          </Btn>
+          <Btn  onClick={()=>setTema(2)}>
+          {tema==2?<Sel><ion-icon name="checkmark-circle-outline"></ion-icon></Sel>:<></>}
+            animais
+          </Btn>
           
     </Tudo>:
     tipo!=1&&tipo!=2?
@@ -213,7 +224,7 @@ function App() {
             <Kard width={width} height={height} ></Kard>
             :<Card width={width} height={height} onClick={()=>{if(jogo.length==1&&jogo[0]==index){}else{setJogo([...jogo,index])}}}>
             {!show[index]?<section><img src={capa}/></section>:
-            <article><img src={animais[num]}/></article>}
+            <article><img src={imagens[num]}/></article>}
           </Card>
           )})}
         </Deck>}
@@ -222,6 +233,13 @@ function App() {
 }
 
 export default App;
+const Sel=styled.div`
+position:absolute;
+display:flex;align-items:center;justify-content:center;
+font-size:40px;
+height:50px;width:50px;
+left:10px;
+`
 const Recorde=styled.div`
 background-color:blue;width:96px;height:50px;
 font-size:16px;display:flex;flex-direction:column;
@@ -262,16 +280,17 @@ justify-content:space-evenly;align-items:space-evenly;
 
 `
 const Tudo=styled.div`
+h1{margin:40px 0 0px 20px;width:90%;font-size:26px;}
 width:100vw;height:100vh;
 background-color:#e8e6b0;
 display:flex;flex-direction:column;align-items:center;
 h6{color:brown;font-size:30px;width:250px;height:100%;display:flex;justify-content:center;align-items:center;}
 `
-const Btn=styled.button`display:flex;
+const Btn=styled.button`display:flex;position:relative;
 align-items:center;justify-content:space-evenly;;
 cursor:pointer;font-size:20px;
   width:90%;height:70px;
-  margin:${props=>props.primeiro?'100px 0px 0px 0':'30px 0 0 0'};
+  margin:${props=>props.primeiro?'70px 0px 0px 0':'30px 0 0 0'};
   border:0;border-radius:35px;
   background-color:${props=>props.cor?'orange':'lightblue'};
 `
