@@ -48,11 +48,15 @@ import marin from './animais/marin.jpg'
 import pato from './animais/pato.jpg'
 import tartaruga from './animais/tartaruga.jpg'
 import dino from './animais/dino.png'
+import tubarao from './animais/tubarao.jpg'
+import vaca from './animais/vaca.jpg'
+import polvo from './animais/polvo.jpg'
+import caran from './animais/caran.png'
 import capaAnimais from './imgs/capa.jpg'
 const lista24falses=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,]
 function App() {
   const animais=[aguia,elefante,formiga,girafa,golfinho,leao,orca,orni,pinguim,rino,sapo,tigre,canguru,cobra,estrela,foca,marin,
-        pato,tartaruga,dino
+        pato,tartaruga,dino,tubarao,vaca,polvo,caran
   ]
   const marcas=[audi,bmw,chevrolet,citroen,
     renault,toyota,volkswagen,ferrari,
@@ -65,9 +69,10 @@ function App() {
     for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
   }
-  const [tema,setTema]=useState(1)
+  const [tema,setTema]=useState(JSON.parse(localStorage.getItem('tema'))||1)
+  const [rep,setRep]=useState(JSON.parse(localStorage.getItem('repete'))||1)
   const capa=tema==1?fusca:capaAnimais
-  const [pares,setPares]=useState(false)
+  const [pares,setPares]=useState(JSON.parse(localStorage.getItem('pares'))||12)
   const [erros,setErros]=useState(0)
   const [tipo,setTipo]=useState(false)
   const [jogo,setJogo]=useState([])
@@ -151,7 +156,7 @@ function App() {
           setPlacar([pontos0,pontos1])
           setJogo([])
           setAchados(ar)
-          setVez(quemJogou)
+          setVez(rep==1?quemJogou:quemJogou==0?1:0)
           let acabou=true
           for(let item of ar){
             if(!item)acabou=false
@@ -174,35 +179,48 @@ function App() {
   const listaR=[r12,r20,r24]
   return (
     tipo==false?
-    <Tudo>
-          <Btn cor={true} primeiro={true} onClick={()=>setTipo(1)}>
+    <Tudo><Linha>
+          <Btn cor={true}  primeiro={true} onClick={()=>setTipo(1)}>
             solo
           </Btn>
-          <Btn cor={true}   onClick={()=>setTipo(2)}>
+          <Btn cor={true}  primeiro={true}   onClick={()=>setTipo(2)}>
             confronto
           </Btn>
-          <h1>Tema:</h1>
-          <Btn   onClick={()=>setTema(2)}>
+          </Linha>
+          
+          <h4>Tema:</h4>
+          <Linha>
+          <Btn selec={tema==1}   onClick={()=>{setTema(1);localStorage.setItem(`tema`, JSON.stringify(1))}}>
             {tema==1?<Sel><ion-icon name="checkmark-circle-outline"></ion-icon></Sel>:<></>}
             carros
           </Btn>
-          <Btn  onClick={()=>setTema(2)}>
+          <Btn selec={tema==2}  onClick={()=>{setTema(2);localStorage.setItem(`tema`, JSON.stringify(2))}}>
           {tema==2?<Sel><ion-icon name="checkmark-circle-outline"></ion-icon></Sel>:<></>}
             animais
           </Btn>
-          
-    </Tudo>:
-    tipo!=1&&tipo!=2?
-    <Tudo>
-      <h6>{tipo}</h6>
-    </Tudo>:(tipo==1||tipo==2)&&!pares?
-    <Tudo>
-    {listaPossiveis.map((num,index)=><Btn onClick={()=>{setPares(num);}}>
+          </Linha>
+          <h4>Acertou repete:</h4>
+          <Linha>
+          <Btn selec={rep==1}   onClick={()=>{setRep(1);localStorage.setItem(`rep`, JSON.stringify(1))}}>
+            {rep==1?<Sel><ion-icon name="checkmark-circle-outline"></ion-icon></Sel>:<></>}
+            sim
+          </Btn>
+          <Btn selec={rep==2}  onClick={()=>{setRep(2);localStorage.setItem(`rep`, JSON.stringify(2))}}>
+          {rep==2?<Sel><ion-icon name="checkmark-circle-outline"></ion-icon></Sel>:<></>}
+            não
+          </Btn>
+          </Linha>
+          <h4>Quantidade:</h4>
+          <Linha>
+    {listaPossiveis.map((num,index)=><Btn selec={pares==num} onClick={()=>{setPares(num);localStorage.setItem(`pares`, JSON.stringify(num))}}>
     {num} pares
-    {listaR[index]?<Recorde><p>RECORDE</p> <p>{listaR[index]} erros</p></Recorde>:<></>}
+    {pares==num?<Sel><ion-icon name="checkmark-circle-outline"></ion-icon></Sel>:<></>}
+    {listaR[index]?<Recorde><p>recorde: {listaR[index]} erros</p></Recorde>:<></>}
     </Btn>)}
-  </Tudo>
-    :
+    </Linha>
+    </Tudo>:tipo==!1&&tipo!=2?<Tudo>
+    <h6>{tipo}</h6>
+    </Tudo>:
     <Tudo>
       {
         tipo==1?<Placar>
@@ -234,17 +252,20 @@ function App() {
 
 export default App;
 const Sel=styled.div`
-position:absolute;
+position:absolute;top:0px;
 display:flex;align-items:center;justify-content:center;
-font-size:40px;
-height:50px;width:50px;
-left:10px;
+font-size:30px;color:black;
+height:30px;width:30px;
+left:0px;
 `
 const Recorde=styled.div`
-background-color:blue;width:96px;height:50px;
-font-size:16px;display:flex;flex-direction:column;
-justify-content:space-evenly;
-p{margin:0px;}color:white;border-radius:10px;
+background-color:#005b77;width:100%;height:25px;
+font-size:16px;display:flex;align-items:center;
+justify-content:center;position:absolute;
+bottom:0;
+p{margin:0px;}color:white;
+border-bottom-left-radius:10px;
+border-bottom-right-radius:10px;
 `
 const Go=styled.div`
 display:flex;justify-content:center;align-items:center;
@@ -280,17 +301,21 @@ justify-content:space-evenly;align-items:space-evenly;
 
 `
 const Tudo=styled.div`
-h1{margin:40px 0 0px 20px;width:90%;font-size:26px;}
+h4{margin:10px 0 0px 20px;font-size:26px;width:calc(100% - 20px)}
 width:100vw;height:100vh;
 background-color:#e8e6b0;
 display:flex;flex-direction:column;align-items:center;
 h6{color:brown;font-size:30px;width:250px;height:100%;display:flex;justify-content:center;align-items:center;}
 `
-const Btn=styled.button`display:flex;position:relative;
-align-items:center;justify-content:space-evenly;;
-cursor:pointer;font-size:20px;
-  width:90%;height:70px;
-  margin:${props=>props.primeiro?'70px 0px 0px 0':'30px 0 0 0'};
-  border:0;border-radius:35px;
-  background-color:${props=>props.cor?'orange':'lightblue'};
+const Linha=styled.div`
+width:100%;display:flex;justify-content:;
+`
+const Btn=styled.button`display:flex;position:relative;color:black;
+border:${props=>props.selec?'5px solid #3a90aa':'0'};
+align-items:center;justify-content:space-evenly;flex-direction:column;;
+cursor:pointer;font-size:20px;flex-direction:column;
+  width:30%;height:90px;
+  margin:${props=>props.primeiro?'20px 0px 0px 2%':'7px 0 0 2%'};
+  border-radius:15px;
+  background-color:${props=>props.cor?'orange':'#8bcce0'};
 `
