@@ -266,7 +266,7 @@ const Recorde=styled.div`ion-icon{font-size:20px;}
 background-color:#999901;width:100%;height:25px;
 font-size:16px;display:flex;align-items:center;
 justify-content:space-between;position:absolute;
-bottom:0;padding:0 15px 0 7px;box-sizing:border-box;
+bottom:0;padding:0 7px 0 7px;box-sizing:border-box;
 p{margin:0px;}color:white;
 border-bottom-left-radius:10px;
 border-bottom-right-radius:10px;
@@ -329,7 +329,7 @@ display:flex;position:relative;color:white;
 align-items:center;justify-content:space-evenly;flex-direction:column;;
 cursor:pointer;font-size:28px;flex-direction:column;
   width:95%;height:50px;font-weight:700;
-  margin:20px 0px 0px 0%;
+  margin:30px 0px 0px 0%;
   border-radius:15px;
   background-color:green;
   h5{margin:0 0 10px 0;font-size:20px;font-weight:500}
