@@ -74,7 +74,8 @@ function App() {
   const capa=tema==1?fusca:capaAnimais
   const [pares,setPares]=useState(JSON.parse(localStorage.getItem('pares'))||12)
   const [erros,setErros]=useState(0)
-  const [tipo,setTipo]=useState(false)
+  const [comecou,setComecou]=useState(false)
+  const [tipo,setTipo]=useState(localStorage.getItem('tipo')||1)
   const [jogo,setJogo]=useState([])
   const [placar,setPlacar]=useState([0,0])
   const [vez,setVez]=useState(0)
@@ -178,12 +179,14 @@ function App() {
   const r24=JSON.parse(localStorage.getItem('r24'))||false
   const listaR=[r12,r20,r24]
   return (
-    tipo==false?
+    comecou==false?
     <Tudo><Linha>
-          <Btn cor={true}  primeiro={true} onClick={()=>setTipo(1)}>
+          <Btn selec={tipo==1} primeiro={true} onClick={()=>{setTipo(1);localStorage.setItem(`tipo`, JSON.stringify(1))}}>
+          {tipo==1?<Sel><ion-icon name="checkmark-circle"></ion-icon></Sel>:<></>}
             solo
           </Btn>
-          <Btn cor={true}  primeiro={true}   onClick={()=>setTipo(2)}>
+          <Btn selec={tipo==2} primeiro={true}   onClick={()=>{setTipo(2);localStorage.setItem(`tipo`, JSON.stringify(2))}}>
+          {tipo==2?<Sel><ion-icon name="checkmark-circle"></ion-icon></Sel>:<></>}
             confronto
           </Btn>
           </Linha>
@@ -191,33 +194,34 @@ function App() {
           <h4>Tema:</h4>
           <Linha>
           <Btn selec={tema==1}   onClick={()=>{setTema(1);localStorage.setItem(`tema`, JSON.stringify(1))}}>
-            {tema==1?<Sel><ion-icon name="checkmark-circle-outline"></ion-icon></Sel>:<></>}
+            {tema==1?<Sel><ion-icon name="checkmark-circle"></ion-icon></Sel>:<></>}
             carros
           </Btn>
           <Btn selec={tema==2}  onClick={()=>{setTema(2);localStorage.setItem(`tema`, JSON.stringify(2))}}>
-          {tema==2?<Sel><ion-icon name="checkmark-circle-outline"></ion-icon></Sel>:<></>}
+          {tema==2?<Sel><ion-icon name="checkmark-circle"></ion-icon></Sel>:<></>}
             animais
           </Btn>
           </Linha>
           <h4>Acertou repete:</h4>
           <Linha>
           <Btn selec={rep==1}   onClick={()=>{setRep(1);localStorage.setItem(`rep`, JSON.stringify(1))}}>
-            {rep==1?<Sel><ion-icon name="checkmark-circle-outline"></ion-icon></Sel>:<></>}
+            {rep==1?<Sel><ion-icon name="checkmark-circle"></ion-icon></Sel>:<></>}
             sim
           </Btn>
           <Btn selec={rep==2}  onClick={()=>{setRep(2);localStorage.setItem(`rep`, JSON.stringify(2))}}>
-          {rep==2?<Sel><ion-icon name="checkmark-circle-outline"></ion-icon></Sel>:<></>}
+          {rep==2?<Sel><ion-icon name="checkmark-circle"></ion-icon></Sel>:<></>}
             não
           </Btn>
           </Linha>
-          <h4>Quantidade:</h4>
+          <h4>Pares:</h4>
           <Linha>
     {listaPossiveis.map((num,index)=><Btn selec={pares==num} onClick={()=>{setPares(num);localStorage.setItem(`pares`, JSON.stringify(num))}}>
-    {num} pares
-    {pares==num?<Sel><ion-icon name="checkmark-circle-outline"></ion-icon></Sel>:<></>}
-    {listaR[index]?<Recorde><p>recorde: {listaR[index]} erros</p></Recorde>:<></>}
+    <h5>{num}</h5>
+    {pares==num?<Sel><ion-icon name="checkmark-circle"></ion-icon></Sel>:<></>}
+    {listaR[index]?<Recorde><ion-icon name="trophy"></ion-icon><p> {listaR[index]} erros</p></Recorde>:<></>}
     </Btn>)}
     </Linha>
+    <Comec onClick={()=>setComecou(true)}>Jogar</Comec>
     </Tudo>:tipo==!1&&tipo!=2?<Tudo>
     <h6>{tipo}</h6>
     </Tudo>:
@@ -254,15 +258,15 @@ export default App;
 const Sel=styled.div`
 position:absolute;top:0px;
 display:flex;align-items:center;justify-content:center;
-font-size:30px;color:black;
+font-size:30px;color:#3a90aa;
 height:30px;width:30px;
 left:0px;
 `
-const Recorde=styled.div`
-background-color:#005b77;width:100%;height:25px;
+const Recorde=styled.div`ion-icon{font-size:20px;}
+background-color:#999901;width:100%;height:25px;
 font-size:16px;display:flex;align-items:center;
-justify-content:center;position:absolute;
-bottom:0;
+justify-content:space-between;position:absolute;
+bottom:0;padding:0 15px 0 7px;box-sizing:border-box;
 p{margin:0px;}color:white;
 border-bottom-left-radius:10px;
 border-bottom-right-radius:10px;
@@ -314,8 +318,19 @@ const Btn=styled.button`display:flex;position:relative;color:black;
 border:${props=>props.selec?'5px solid #3a90aa':'0'};
 align-items:center;justify-content:space-evenly;flex-direction:column;;
 cursor:pointer;font-size:20px;flex-direction:column;
-  width:30%;height:90px;
-  margin:${props=>props.primeiro?'20px 0px 0px 2%':'7px 0 0 2%'};
+  width:30%;height:70px;
+  margin:${props=>props.primeiro?'20px 0px 0px 2.5%':'7px 0 0 2.5%'};
   border-radius:15px;
   background-color:${props=>props.cor?'orange':'#8bcce0'};
+  h5{margin:0 0 10px 0;font-size:20px;font-weight:500}
+`
+const Comec=styled.button`border:0;
+display:flex;position:relative;color:white;
+align-items:center;justify-content:space-evenly;flex-direction:column;;
+cursor:pointer;font-size:28px;flex-direction:column;
+  width:95%;height:50px;font-weight:700;
+  margin:20px 0px 0px 0%;
+  border-radius:15px;
+  background-color:green;
+  h5{margin:0 0 10px 0;font-size:20px;font-weight:500}
 `
