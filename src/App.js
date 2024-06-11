@@ -406,13 +406,16 @@ function App() {
             <Kard width={width} height={height} ></Kard>
             :<Card width={width} height={height} onClick={()=>{
               
-              if(tipo==3){
-                if(minhaVez)postarJogar(index)
-              }else{
                 if((flop.length==1&&flop[0]==index)){
 
-                }else{setFlop([...flop,index])}
-              }
+                }else{
+                  if(tipo==3){
+                    if(minhaVez)postarJogar(index)
+                  }else{
+                    setFlop([...flop,index])
+                  }
+                  
+                }
               }}>
             {!show[index]?<section><img src={capa}/></section>:
             <article><img src={(tema==1?marcas:animais)[imagens[num]]}/></article>}
