@@ -397,7 +397,7 @@ function App() {
           </section>
         </Placar>
       }
-      {!emb||!tipo?<></>:<Deck  width={pares==24?'calc(66vh - 45px)':'calc(59vh - 45px)'} height={pares==12?'calc(100vh - 130px)':pares==20?'calc(100vh - 90px)':'calc(100vh - 130px)'}>
+      {!emb||!tipo?<></>:<Deck  width={pares==24?'c100%':'calc(59vh - 45px)'} height={pares==12?'calc(100vh - 130px)':pares==20?'calc(100vh - 90px)':'133vw'}>
         {emb.map((num,index)=>{
           const width=pares==12?23:pares==20?18.4:15.3
           const height=pares==12?15:11.5
