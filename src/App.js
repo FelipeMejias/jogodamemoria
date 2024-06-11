@@ -1,8 +1,3 @@
-import logo from './logo.svg';
-import './App.css';
-import styled from 'styled-components'
-import { useState } from 'react';
-import { useEffect } from 'react';
 import fusca from './imgs/fusca.jpg'
 import audi from './imgs/audi.png'
 import bmw from './imgs/bmw.jpg'
@@ -53,22 +48,28 @@ import vaca from './animais/vaca.jpg'
 import polvo from './animais/polvo.jpg'
 import caran from './animais/caran.png'
 import capaAnimais from './imgs/capa.jpg'
-const lista24falses=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,]
+import './App.css';
+import styled from 'styled-components'
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { getJogo, getJogos, jogar, postJogo, putJogo } from './api'
+function shuffle(o) {
+  for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+  return o;
+}
+const listaPossiveis=[12,20,24]
+const r12=JSON.parse(localStorage.getItem('r12'))||false
+const r20=JSON.parse(localStorage.getItem('r20'))||false
+const r24=JSON.parse(localStorage.getItem('r24'))||false
+const listaR=[r12,r20,r24]
+const lista24Nums=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
+
 function App() {
-  const animais=[aguia,elefante,formiga,girafa,golfinho,leao,orca,orni,pinguim,rino,sapo,tigre,canguru,cobra,estrela,foca,marin,
-        pato,tartaruga,dino,tubarao,vaca,polvo,caran
-  ]
-  const marcas=[audi,bmw,chevrolet,citroen,
-    renault,toyota,volkswagen,ferrari,
-    honda,hyundai,fiat,ford,kia,lamborghini,landrover,mercedes,nissan,peugeot,
-    maserati,mitsubishi,
-    porsche,ram,suzuki,volvo]
-    const [imagens,setImagens]=useState(false)
+  const animais=[aguia,elefante,formiga,girafa,golfinho,leao,orca,orni,pinguim,rino,sapo,tigre,canguru,cobra,estrela,foca,marin,pato,tartaruga,dino,tubarao,vaca,polvo,caran]
+  const marcas=[audi,bmw,chevrolet,citroen,renault,toyota,volkswagen,ferrari,honda,hyundai,fiat,ford,kia,lamborghini,landrover,mercedes,nissan,peugeot,maserati,mitsubishi,porsche,ram,suzuki,volvo]
+  const [imagens,setImagens]=useState(false)
   const [emb,setEmb]=useState(false)
-  function shuffle(o) {
-    for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-    return o;
-  }
+  
   const [tema,setTema]=useState(JSON.parse(localStorage.getItem('tema'))||1)
   const [rep,setRep]=useState(JSON.parse(localStorage.getItem('repete'))||1)
   const capa=tema==1?fusca:capaAnimais
@@ -76,17 +77,110 @@ function App() {
   const [erros,setErros]=useState(0)
   const [comecou,setComecou]=useState(false)
   const [tipo,setTipo]=useState(localStorage.getItem('tipo')||1)
-  const [jogo,setJogo]=useState([])
+  const [flop,setFlop]=useState([])
   const [placar,setPlacar]=useState([0,0])
   const [vez,setVez]=useState(0)
-  const [show,setShow]=useState(lista24falses)
-  const [achados,setAchados]=useState(lista24falses)
+  const [show,setShow]=useState(false)
+  const [achados,setAchados]=useState(false)
+
+  const [pageNomeBusca,setPageNomeBusca]=useState(false)
+  const [text,setText]=useState('')
+  const [nomes,setNomes]=useState(false)
+  const [codigo,setCodigo]=useState(false)
+  const [listaJogos,setListaJogos]=useState(false)
+  const minhaVez=nomes[vez]==text
+  const nomeOponente=nomes[0]==text?nomes[1]:nomes[0]
+  function postarJogar(num){
+    const response=jogar(codigo,num)
+    response.then(res=>{
+      const {nFlop,nVez}=res.data
+      setFlop(nFlop)
+      setVez(nVez)
+      
+        setTimeout(() => {
+          if(nFlop.length==2)buscarJogo(codigo)
+        }, 300);
+    })
+  }
+  function buscarJogo(cod){
+    
+    const response=getJogo(cod)
+    response.then(res=>{
+      const {nFlop,nVez,nPlacar}=res.data
+      setFlop(nFlop)
+      setPlacar(nPlacar)
+      setTimeout(() => {
+        setVez(nVez)
+      }, 300);
+      setTimeout(() => {
+        buscarJogo(cod)
+      }, 2000);
+    })
+  }
+  function esperarOponente(cod){
+    const response=getJogo(cod)
+    response.then(res=>{
+      const {nNomes}=res.data
+      if(nNomes[1]){
+        setNomes(nNomes)
+        setPageNomeBusca(false)
+      }else{
+        setTimeout(() => {
+          esperarOponente(cod)
+        }, 2000);
+      }
+    })
+  }
+  function postarJogo(){
+    const response=postJogo(tema,rep,pares,text)
+    response.then(res=>{
+      buscarJogos()
+      const {nPares,nCodigo,nImagens,nEmb}=res.data
+      setCodigo(nCodigo)
+      setImagens(nImagens)
+      setEmb(nEmb)
+      const arrayFalses=[]
+      for(let k=0;k<nPares;k++){
+        arrayFalses.push(false);arrayFalses.push(false);
+      }
+      setShow([...arrayFalses])
+      setAchados([...arrayFalses])
+      esperarOponente(nCodigo)
+    })
+  }
+  function putarJogo(cod){
+    const response=putJogo(cod,text)
+    response.then(res=>{
+      const {nTema,nRep,nNomes,nPares,nCodigo,nImagens,nEmb}=res.data
+      setTema(nTema)
+      setRep(nRep)
+      setPares(nPares)
+      setNomes(nNomes)
+      setCodigo(nCodigo)
+      setImagens(nImagens)
+      setEmb(nEmb)
+      const arrayFalses=[]
+      for(let k=0;k<nPares;k++){
+        arrayFalses.push(false);arrayFalses.push(false);
+      }
+      setShow([...arrayFalses])
+      setAchados([...arrayFalses])
+      setPageNomeBusca(false)
+      buscarJogo(nCodigo)
+    })
+  }
+  function buscarJogos(){
+    const response=getJogos()
+    response.then(res=>{
+      setListaJogos(res.data)
+    })
+  }
   function encerrarJogo(pontos0,pontos1){
     let textoFim=tipo==1?`
             Boaaa! 
             Você completou ${pares} pares errando apenas ${erros}
             `:`
-            ${pontos0>pontos1?'Vermelho':pontos1>pontos0?'Azul':'Empatou!'} ${pontos0==pontos1?'':'ganhou!'} 
+            ${pontos0>pontos1?(tipo==3?nomes[0]:'Vermelho'):pontos1>pontos0?(tipo==3?nomes[1]:'Azul'):'Empatou!'} ${pontos0==pontos1?'':'ganhou!'} 
             Placar: ${pontos0>pontos1?pontos0:pontos1} a ${pontos0<pontos1?pontos0:pontos1}
             `
             
@@ -103,59 +197,79 @@ function App() {
               }
             
           }
-    setTipo(textoFim)
+    setComecou(textoFim)
   }
-  useEffect(()=>{
-  },[])
-  useEffect(()=>{
-    setImagens(shuffle(tema==1?marcas:animais))
+  function mudarFlop3(){
+    if(tipo!=3)return
     const array=[]
-    const arrayFalses=[]
     for(let k=0;k<pares;k++){
-      array.push(k);array.push(k);
-      arrayFalses.push(false);arrayFalses.push(false);
+      array.push(false);array.push(false);
     }
-    const novoEmb=shuffle(array)
-    console.log(novoEmb)
-    setEmb([...novoEmb])
-    setShow([...arrayFalses])
-    setAchados([...arrayFalses])
-  },[pares,tema])
-  useEffect(()=>{
-    console.log(emb,show,achados)
+    if(flop.length==0){setShow(array)}
+    if(flop.length==1){
+      const ar=[]
+      for(let k=0;k<pares*2;k++){
+        if(k==flop[0]){ar.push(true)}else{ar.push(false)}
+      }
+      setShow(ar)
+    }
+    if(flop.length==2){
+      const ar=[]
+      for(let k=0;k<pares*2;k++){
+        if(k==flop[0]||k==flop[1]){ar.push(true)}else{ar.push(false)}
+      }
+      setShow(ar)
+      setTimeout(()=>{
+        if(emb[flop[0]]==emb[flop[1]]){
+          const ar=[]
+          for(let k=0;k<pares*2;k++){
+            if(k==flop[0]||k==flop[1]){ar.push(true)}else{ar.push(achados[k])}
+          }
+          setAchados(ar)
+          let acabou=true
+          for(let item of ar){
+            if(!item)acabou=false
+          }
+          if(acabou)encerrarJogo(placar[0],placar[1])
+        }
+      },1700)
+    }
+  }
+  function mudarFlop(){
+    if(tipo==3)return
     const array=[]
     for(let k=0;k<pares;k++){
       array.push(false);array.push(false);
     }
     const quemJogou=vez
-    if(jogo.length==0)setShow(array)
-    if(jogo.length==1){
+    if(flop.length==0)setShow(array)
+    if(flop.length==1){
       const ar=[]
       for(let k=0;k<pares*2;k++){
-        if(k==jogo[0]){ar.push(true)}else{ar.push(false)}
+        if(k==flop[0]){ar.push(true)}else{ar.push(false)}
       }
       setShow(ar)
     }
-    if(jogo.length==2){
+    if(flop.length==2){
       const ar=[]
       for(let k=0;k<pares*2;k++){
-        if(k==jogo[0]||k==jogo[1]){ar.push(true)}else{ar.push(false)}
+        if(k==flop[0]||k==flop[1]){ar.push(true)}else{ar.push(false)}
       }
       setShow(ar)
       setVez(null)
 
       setTimeout(()=>{
-        if(emb[jogo[0]]==emb[jogo[1]]){
+        if(emb[flop[0]]==emb[flop[1]]){
           const ar=[]
           for(let k=0;k<pares*2;k++){
-            if(k==jogo[0]||k==jogo[1]){ar.push(true)}else{ar.push(achados[k])}
+            if(k==flop[0]||k==flop[1]){ar.push(true)}else{ar.push(achados[k])}
           }
           let pontos0=placar[0]
           let pontos1=placar[1]
           if(vez==0)pontos0++
           if(vez==1)pontos1++
           setPlacar([pontos0,pontos1])
-          setJogo([])
+          setFlop([])
           setAchados(ar)
           setVez(rep==1?quemJogou:quemJogou==0?1:0)
           let acabou=true
@@ -166,18 +280,28 @@ function App() {
             
         }else{
           setErros(erros+1)
-          setJogo([])
+          setFlop([])
           setVez(quemJogou==0?1:0)
         }
       },1700)
     }
-  },[jogo])
-  const listaPossiveis=[12,20,24]
-  
-  const r12=JSON.parse(localStorage.getItem('r12'))||false
-  const r20=JSON.parse(localStorage.getItem('r20'))||false
-  const r24=JSON.parse(localStorage.getItem('r24'))||false
-  const listaR=[r12,r20,r24]
+  }
+  function iniciarJogo(){
+    const array=[]
+    const arrayFalses=[]
+    for(let k=0;k<pares;k++){
+      array.push(k);array.push(k);
+      arrayFalses.push(false);arrayFalses.push(false);
+    }
+    const novoEmb=shuffle(array)
+    setImagens(shuffle(lista24Nums))
+    setEmb([...novoEmb])
+    setShow([...arrayFalses])
+    setAchados([...arrayFalses])
+  }
+  useEffect(buscarJogos,[])
+  useEffect(mudarFlop,[flop])
+  useEffect(mudarFlop3,[flop])
   return (
     comecou==false?
     <Tudo><Linha>
@@ -188,6 +312,10 @@ function App() {
           <Btn selec={tipo==2} primeiro={true}   onClick={()=>{setTipo(2);localStorage.setItem(`tipo`, JSON.stringify(2))}}>
           {tipo==2?<Sel><ion-icon name="checkmark-circle"></ion-icon></Sel>:<></>}
             confronto
+          </Btn>
+          <Btn selec={tipo==3} primeiro={true}   onClick={()=>{setTipo(3);localStorage.setItem(`tipo`, JSON.stringify(3))}}>
+          {tipo==3?<Sel><ion-icon name="checkmark-circle"></ion-icon></Sel>:<></>}
+            online
           </Btn>
           </Linha>
           
@@ -221,9 +349,36 @@ function App() {
     {listaR[index]?<Recorde><ion-icon name="trophy"></ion-icon><p> {listaR[index]} erros</p></Recorde>:<></>}
     </Btn>)}
     </Linha>
-    <Comec onClick={()=>setComecou(true)}>Jogar</Comec>
-    </Tudo>:tipo==!1&&tipo!=2?<Tudo>
-    <h6>{tipo}</h6>
+    <Comec onClick={()=>{
+      setComecou(true)
+      if(tipo==3){
+        setPageNomeBusca(true)
+        buscarJogos()
+      }else{
+        iniciarJogo()
+      }
+      }}>Jogar</Comec>
+    </Tudo>:comecou!==true?<Tudo>
+    <h6>{comecou}</h6>
+    </Tudo>:
+    pageNomeBusca?<Tudo>
+      <input id="searchField" value={text} onChange={e=>{setText(e.target.value)}}  placeholder='Qual nome você quer usar?'></input>
+      {listaJogos?<Quadro>
+        {listaJogos?listaJogos.map(jogo=>{
+          const {nPares,nNomes,nCodigo}=jogo
+          return(
+            <Joguinho>
+              <p><strong>{nNomes[0]}</strong></p>
+              <p>{nPares} pares</p>
+              {text==''?<></>:nNomes[0]==text?<BotAc blueColor={true}>Esperando oponente</BotAc>
+              :<BotAc onClick={()=>putarJogo(nCodigo)}>Aceitar desafio</BotAc>}
+            </Joguinho>
+          )
+        }):<></>}
+      </Quadro>:<h1>Carregando...</h1>}
+      {text==''?<></>:<Comec onClick={()=>{
+            postarJogo()
+            }}>Postar desafio</Comec>}
     </Tudo>:
     <Tudo>
       {
@@ -231,10 +386,15 @@ function App() {
           <h3>erros: {erros}</h3>
           {vez===null?<Go cor={'transparent'}></Go>:<Go cor={'green'}>go!</Go>}
         </Placar>:<Placar>
-        <h1>{placar[0]}</h1>
-        
-        {vez===null?<Go cor={'transparent'}></Go>:vez==0?<Go cor={'#f20707'}>go!</Go>:<Go cor={'#2320d6'}>go!</Go>}
-        <h2>{placar[1]}</h2>
+          <section>
+            <h1>{placar[0]}</h1>
+            <h1><small>{nomes[0]}</small></h1>
+          </section>
+          {vez===null||vez==3?<Go cor={'transparent'}></Go>:tipo==3?<Go cor={minhaVez?'green':'#aaaaaa'}><p>{minhaVez?'sua vez':`vez de`}</p>{minhaVez?<></>:<p> {nomeOponente}</p>}</Go>:vez==0?<Go cor={'#f20707'}>go!</Go>:<Go cor={'#2320d6'}>go!</Go>}
+          <section>
+            <h2>{placar[1]}</h2>
+            <h2><small>{nomes[1]}</small></h2>
+          </section>
         </Placar>
       }
       {!emb||!tipo?<></>:<Deck  width={pares==24?'calc(66vh - 45px)':'calc(59vh - 45px)'} height={pares==12?'calc(100vh - 130px)':pares==20?'calc(100vh - 90px)':'calc(100vh - 130px)'}>
@@ -244,9 +404,18 @@ function App() {
           return(
             achados[index]?
             <Kard width={width} height={height} ></Kard>
-            :<Card width={width} height={height} onClick={()=>{if(jogo.length==1&&jogo[0]==index){}else{setJogo([...jogo,index])}}}>
+            :<Card width={width} height={height} onClick={()=>{
+              
+              if(tipo==3){
+                if(minhaVez)postarJogar(index)
+              }else{
+                if((flop.length==1&&flop[0]==index)){
+
+                }else{setFlop([...flop,index])}
+              }
+              }}>
             {!show[index]?<section><img src={capa}/></section>:
-            <article><img src={imagens[num]}/></article>}
+            <article><img src={(tema==1?marcas:animais)[imagens[num]]}/></article>}
           </Card>
           )})}
         </Deck>}
@@ -255,6 +424,33 @@ function App() {
 }
 
 export default App;
+const Joguinho=styled.div`
+width:90%;height:100px;position:relative;
+background-color:white;margin:20px 0 0 0;
+border-radius:15px;padding:0 0 0 10px;
+p{strong{font-size:20px;}}
+`
+const BotAc=styled.div`
+position:absolute;right:10px;top:10px;
+display:flex;color:white;
+align-items:center;justify-content:space-evenly;flex-direction:column;;
+cursor:pointer;font-size:16px;flex-direction:column;
+  width:160px;height:50px;font-weight:500;
+  margin:30px 0px 0px 0%;
+  border-radius:15px;
+  background-color:${props=>props.blueColor?'blue':'green'};
+  h5{margin:0 0 10px 0;font-size:20px;font-weight:500}
+`
+const Quadro=styled.div`
+display:flex;align-items:center;
+flex-direction:column;
+height:calc(100% - 250px);width:90%;
+overflow:hidden;
+overflow-y:scroll;background-color:#8c883f;
+  ::-webkit-scrollbar {width:12px}
+  ::-webkit-scrollbar-thumb {background: #00702c; border-radius:5px;}
+  ::-webkit-scrollbar-thumb:hover {background: #006028;}
+`
 const Sel=styled.div`
 position:absolute;top:0px;
 display:flex;align-items:center;justify-content:center;
@@ -271,20 +467,28 @@ p{margin:0px;}color:white;
 border-bottom-left-radius:10px;
 border-bottom-right-radius:10px;
 `
-const Go=styled.div`
-display:flex;justify-content:center;align-items:center;
+const Go=styled.div`flex-direction:column;
+display:flex;justify-content:space-evenly;align-items:center;
 color:white;box-sizing:border-box;
 background-color:${props=>props.cor};
-width:90px;height:50px;border-radius:25px;
+width:90px;height:50px;border-radius:10px;
 margin:15px 15px 0 20px;padding-bottom:8px;
 font-weight:600;font-size:35px;
+
+p{margin:0px;font-size:18px;line-height:18px;}
 `
 const Placar=styled.div`
 width:100%;background-color:;
 height:80px;display:flex;justify-content:space-evenly;
 font-size:20px;
-h1{width:20px;color:#f20707;font-weight:600;font-size:35px;margin:15px 15px 0 20px;}
-h2{width:20px;color:#2320d6;font-weight:600;font-size:35px;margin:15px 15px 0 20px;}
+section{background-color:;
+width:90px;
+display:flex;flex-direction:column;align-items:center;
+justify-content:space-evenly;height:100%;
+small{font-size:18px;line-height:14px;}
+};
+h1{color:#f20707;font-weight:600;font-size:35px;margin:0 0 0 0;line-height:20px;}
+h2{color:#2320d6;font-weight:600;font-size:35px;margin:0 0 0 0;line-height:20px;}
 h3{width:;color:black;font-weight:600;font-size:35px;margin:15px 15px 0 20px;}
 `
 const Kard=styled.div`
@@ -310,6 +514,9 @@ width:100vw;height:100vh;
 background-color:#e8e6b0;
 display:flex;flex-direction:column;align-items:center;
 h6{color:brown;font-size:30px;width:250px;height:100%;display:flex;justify-content:center;align-items:center;}
+input{background-color:#c4c185;font-size:18px;width:250px;height:50px;border:0;border-radius:10px;
+padding:0 0 0 10px;margin:25px 0 25px 0;
+}
 `
 const Linha=styled.div`
 width:100%;display:flex;justify-content:;
